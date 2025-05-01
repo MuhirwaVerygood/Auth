@@ -6,6 +6,7 @@ import { blogRouter } from "./routers/BlogRoutes.js"
 dotenv.config()
 const app = express()
 app.use(express.json())
+
 mongoose.connect(process.env.MONGODB_URL)
 .then(()=> console.log("Connected to database")
 ).catch(error=> console.log(error)

@@ -15,11 +15,17 @@ const comparePassword = async (requestPassword, savedPassword) => {
 
 const generateToken = async (user) => {
     return jwt.sign(
-      { id: user._id, isAdmin: user.isAdmin },
+      {
+        id: user._id,
+        isAdmin: !!user.isAdmin,
+        isUser: !!user.isUser,
+      },
       process.env.JWT_SECRET,
       { expiresIn: '30d' }
     );
   };
+
+  
   
   const verifyToken = (token) => {
     return jwt.verify(token, process.env.JWT_SECRET);
@@ -27,7 +33,12 @@ const generateToken = async (user) => {
 
 export const registerUser = async (req, res) => {
     try {
-        const { username, email, password, isAdmin } = req.body;
+        const { username, email, password, isAdmin, isUser } = req.body;
+
+        if(isAdmin && isUser){
+            return res.status(400).json({message:"User can not be both admin and user "})
+        }
+
         const userExists = await userModel.findOne({ email })
         if (userExists) {
             return res.status(409).json({ message: "User with that email already exists" })
@@ -39,7 +50,8 @@ export const registerUser = async (req, res) => {
                 username,
                 email, 
                 password: hashedPassword,
-                isAdmin
+                isAdmin,
+                isUser
             }
         )
     
@@ -79,4 +91,8 @@ export const loginUser = async(req ,res  )=>{
 export const accessByAdminOnly = async(req,res)=>{
 
     return res.json(req.user)
+}
+
+export const accessedByUsersOnly = async(req,res)=>{
+    return res.status(200).json({message : "Welcome user"})
 }
