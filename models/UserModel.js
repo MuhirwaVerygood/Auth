@@ -18,6 +18,11 @@ const userSchema = new Schema({
         default: false
     },
 
+    isUser:{
+        type: Boolean,
+        default: false
+    },
+
     password:{
         type: String, 
         required: true
